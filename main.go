@@ -23,6 +23,7 @@ type productInfo struct {
 	Availability bool `json:"availability"`
 }
 
+// Get the web page content on string format
 func getContent(url string) string {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -37,9 +38,11 @@ func getContent(url string) string {
 	return string(body)
 }
 
-func getItemURLs() []string {
+// List items URL from Comper home page
+func listItemURLs() []string {
 	var URL string
 	var urls []string
+
 	homeRegex, _ := regexp.Compile(itemsPattern)
 	URLRegex, _ := regexp.Compile(itemURLPattern)
 	homeContent := getContent(homeURL)
@@ -53,6 +56,7 @@ func getItemURLs() []string {
 	return urls
 }
 
+// Format in a legible way the price crawled
 func formatPrice(price float64, availability bool) float64{
 	if availability{
 		return price/100
@@ -60,6 +64,7 @@ func formatPrice(price float64, availability bool) float64{
 	return 0
 }
 
+// Crawl relevant info for each product passed in a URLs list
 func crawlItemData(urls []string) []productInfo{
 	var content string
 	var dataLayerStr string
@@ -95,7 +100,7 @@ func crawlItemData(urls []string) []productInfo{
 }
 
 func main() {
-	urls := getItemURLs()
+	urls := listItemURLs()
 	data := crawlItemData(urls)
 	dataFile, _ := json.Marshal(data)
 	_ = ioutil.WriteFile("output.json", dataFile, 0644)
